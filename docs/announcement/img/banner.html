@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { width:1920px; height:368px; background:#0d1117; font-family:"Cascadia Code",Consolas,monospace; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .wrap { display:flex; align-items:center; gap:56px; }
+  .title { color:#e6edf3; }
+  .title h1 { font-size:54px; font-weight:600; letter-spacing:-1px; }
+  .title h1 .slash { color:#6e7681; }
+  .title p { font-size:22px; color:#8b949e; margin-top:14px; }
+  .flow { display:flex; align-items:center; gap:18px; }
+  .node { border-radius:10px; padding:20px 26px; text-align:center; }
+  .node .role { font-size:15px; letter-spacing:2px; }
+  .node .who { font-size:22px; font-weight:600; margin-top:6px; }
+  .fable { background:#1c1410; border:2px solid #d97757; }
+  .fable .role { color:#d97757; } .fable .who { color:#f0c5ae; }
+  .codex { background:#0e1a16; border:2px solid #10a37f; }
+  .codex .role { color:#10a37f; } .codex .who { color:#a7e3d2; }
+  .repo  { background:#1a1607; border:2px solid #e3b341; }
+  .repo .role { color:#e3b341; } .repo .who { color:#f2dd9b; }
+  .arrows { color:#6e7681; font-size:26px; line-height:1.5; text-align:center; }
+</style></head><body>
+  <div class="wrap">
+    <div class="title">
+      <h1><span class="slash">/</span>architect-loop</h1>
+      <p>Fable thinks &nbsp;·&nbsp; Codex builds &nbsp;·&nbsp; the repo remembers &nbsp;·&nbsp; you judge</p>
+    </div>
+    <div class="flow">
+      <div class="node fable"><div class="role">ARCHITECT</div><div class="who">Claude Fable</div></div>
+      <div class="arrows">spec ⟶<br>⟵ evidence</div>
+      <div class="node codex"><div class="role">BUILDER</div><div class="who">GPT-5.5 Codex</div></div>
+      <div class="arrows">⟶<br>commits</div>
+      <div class="node repo"><div class="role">MEMORY</div><div class="who">the repo</div></div>
+    </div>
+  </div>
+</body></html>
