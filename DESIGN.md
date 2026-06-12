@@ -336,8 +336,8 @@ routes: discovery scale → `/architect-research`; narrow slice facts → the
 inline fan-out above.
 
 `/architect-research` encodes the methodology the best deep-research systems
-converged on, with the user's five lanes (academic / popular repos /
-cutting-edge repos / production-grade design patterns / general web) as the
+converged on, with six lanes (academic / popular repos / cutting-edge repos /
+production-grade design patterns / general web / expert opinion) as the
 default brainstorm decomposition:
 
 - **Effort scaling embedded in the prompt** — 1 researcher for fact-finds,
@@ -365,6 +365,17 @@ default brainstorm decomposition:
   Anthropic's CitationAgent exists to stop summarizing-of-summaries).
   Output is decision-oriented: answer-first, per-finding "what would change
   this conclusion", explicit open questions.
+- **Expert opinion as a second-wave lane with its own evidence class.** You
+  can't track experts until you know who they are, so lane 6 dispatches in
+  the gap round, roster-seeded by the first wave (survey authors, top-repo
+  maintainers, recurring names). Platform reality is encoded: experts' blogs
+  and HN's keyless Algolia author search are the reliable channels; X is
+  login-walled for agents (use `site:x.com` indexed search + profile URLs,
+  not third-party viewers), and Bluesky's public search API has returned 403
+  since March 2025 ([bsky-docs#332](https://github.com/bluesky-social/bsky-docs/issues/332)).
+  Opinions are reported as dated, conflict-of-interest-flagged positions and
+  never count toward the ≥2-source rule — but expert *disagreements* are
+  first-class findings, since they locate the genuinely open questions.
 - **Verified lane endpoints** live in `lanes.md`: arXiv API recency queries,
   Semantic Scholar citation snowballing (the most reliable "latest papers"
   method), deps.dev/ecosyste.ms dependents (adoption evidence beats stars —

@@ -96,11 +96,14 @@ the art is a separate, deliberately-invoked skill (research-grade fan-out costs
 ```
 
 It compresses your question into a research brief, fans out parallel
-`codex exec --search` researchers across five lanes — **latest academic papers**
+`codex exec --search` researchers across six lanes — **latest academic papers**
 (arXiv recency + citation snowballing), **most popular repos** (dependents
 evidence, fake-star checks), **cutting-edge repos** (velocity + the
 emerging-vs-hype gate), **design patterns from production-grade libraries**
-(the four-category pattern-mining procedure), and **general web** — then
+(the four-category pattern-mining procedure), **general web**, and a
+second-wave **expert-opinion lane** (the blogs/talks/X of the field's named
+experts, roster-seeded from the first wave; opinions reported as dated,
+conflict-flagged positions, never as facts) — then
 verifies load-bearing claims against ≥2 independent sources (VERIFIED /
 UNVERIFIED / DISPUTED / SUSPICIOUS), runs adversarial falsification searches,
 and writes a decision-oriented report to `docs/research/<topic>.md`: answer

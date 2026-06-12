@@ -1,10 +1,11 @@
 ---
 name: architect-research
 description: >
-  Discovery-scale research harness: fan out parallel researchers across five
+  Discovery-scale research harness: fan out parallel researchers across six
   lanes — latest academic papers, most popular repos, cutting-edge repos, design
-  patterns from production-grade libraries, and general web — then verify claims
-  against sources and synthesize a decision-oriented report. Use when
+  patterns from production-grade libraries, general web, and expert opinion
+  (blogs/X/talks of named experts) — then verify claims against sources and
+  synthesize a decision-oriented report. Use when
   brainstorming a project or feature, choosing a technology, or asked to
   "research X", "what's the state of the art", "deep research". For narrow
   slice-level fact checks inside the build loop, /architect handles those inline.
@@ -45,7 +46,11 @@ default to the five lanes:
 2. **Popular repos** — what the ecosystem actually uses
 3. **Cutting-edge repos** — what's emerging right now (and isn't hype)
 4. **Production patterns** — how the best libraries in the niche design it
-5. **General web** — everything else: expert posts, postmortems, comparisons
+5. **General web** — postmortems, comparisons, official docs, everything else
+6. **Expert opinion** *(second wave)* — what the named experts in the field
+   say on their blogs, talks, and X/social. Dispatches in step 4, not here:
+   its roster (survey authors, top-repo maintainers, recurring names) comes
+   from the first wave's findings.
 
 Review the query set for overlap before dispatch — overlapping researchers
 duplicate work and leave gaps. State the plan in a few lines; proceed unless
@@ -81,8 +86,10 @@ guidance, boundaries — plus:
 
 Read all findings. Score coverage against the brief: which sub-questions have
 supported answers? Spawn targeted gap-fill researchers **only** for the
-unanswered ones. Hard stop after two refinement rounds — past that you're
-chasing nonexistent information.
+unanswered ones. This is also where the **expert-opinion lane** dispatches:
+extract the expert roster from the first wave (survey authors, maintainers,
+recurring names) and send the lane-6 researcher after them. Hard stop after
+two refinement rounds — past that you're chasing nonexistent information.
 
 ### 5. Verify (your work, against raw sources)
 
@@ -106,6 +113,10 @@ chasing nonexistent information.
 - **Source hierarchy**: primary (papers, official docs, changelogs, first-party
   engineering blogs) > reputable secondary > SEO listicles (pointers only,
   never citations).
+- **Opinion ≠ fact.** Expert opinions are reported as positions — quoted,
+  dated, conflict-of-interest flagged — and never count toward the ≥2-source
+  rule for factual claims. Expert *disagreements* are first-class findings:
+  they mark the genuinely open questions.
 
 ### 6. Synthesize (one pass, one author — you)
 
@@ -116,6 +127,8 @@ Parallelize gathering, never synthesis. Write `docs/research/<topic>.md`:
 - Per major finding: the claim + confidence tag + **what it implies for the
   decision** + **what evidence would change this conclusion**.
 - Disputes surfaced with both positions — never silently averaged.
+- **Expert positions map**: who believes what (quoted, dated,
+  conflict-of-interest flagged), and where credible experts disagree.
 - **Open questions**: each UNVERIFIED/DISPUTED item with the specific search
   or experiment that would resolve it (this doubles as the next round's input).
 - Citations dated and tier-labeled: `[primary, 2026-04]`.

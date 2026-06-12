@@ -127,3 +127,39 @@ docs/changelogs, pricing/operational constraints.
 - Source hierarchy applies hardest here: SEO listicles and AI-generated
   aggregators are pointers, never citations — chase them to the primary
   source or drop the claim.
+
+## Lane 6 — Expert opinion (second wave — dispatch after lanes 1-5 return)
+
+Objective: what the named experts in <topic> are saying right now — positions,
+warnings, predictions, and especially disagreements — from their blogs, talks,
+and social posts.
+
+- **Build the roster first** (why this lane runs second): survey and top-paper
+  authors (lane 1), maintainers of the leading repos (lanes 2-3), and names
+  that recur across lane 5 results. Pick 5-8; record each expert's affiliation
+  — you'll need it for conflict-of-interest tagging.
+- Where to find their voice, in reliability order:
+  1. **Personal blogs / newsletters** — the primary source for considered
+     positions; search `"<name>" <topic>` and `site:<their-domain> <topic>`.
+  2. **HN comments** — keyless and reliable:
+     `https://hn.algolia.com/api/v1/search?tags=comment,author_<username>&query=<topic>`
+     (many experts comment under well-known usernames).
+  3. **Conference talks / podcasts** — search `"<name>" talk <topic> 2026`;
+     prefer transcripts or the speaker's own writeup over third-party recaps.
+  4. **X** — login-walled for agents. Use search-engine indexing
+     (`site:x.com "<name>" <topic>`) and direct profile URLs
+     (`x.com/<handle>`); don't rely on third-party viewers (flaky) and note
+     that Bluesky's public search API has been closed (403) since March 2025
+     — profile pages only.
+  5. **Reddit / lobste.rs** threads and AMAs (via indexed search:
+     `site:reddit.com "<name>" <topic>`).
+- **Opinion is its own evidence class.** An expert opinion is judgment —
+  datable, revisable, and sometimes conflicted. For every position report:
+  the exact quote or close paraphrase, where and when stated, and any conflict
+  of interest (vendor employee talking their book, author promoting their own
+  tool). An opinion NEVER counts toward the ≥2-source rule for factual claims
+  — facts get verified in the other lanes; this lane reports who believes
+  what and why.
+- **The highest-value output is disagreement**: where credible experts
+  contradict each other is exactly where the genuinely open questions are.
+  Map who stands where and what evidence each side cites.
