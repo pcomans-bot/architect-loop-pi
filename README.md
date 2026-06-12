@@ -1,58 +1,66 @@
 # architect-loop
 
-Run **Claude as your architect** and **GPT Codex as your builder** — on subscriptions,
-not API tokens. The repo is the memory, the architect is the judgment, the builder is
-the hands.
+**Claude Fable 5 as architect. GPT-5.5 Codex as builder. The repo as the only
+memory.** A Claude Code skill that runs the cross-vendor architect/builder loop
+on flat-rate subscriptions — judgment minutes on the expensive model, typing
+hours on the fast one.
 
 ```
-Claude (architect)          Codex (builder)             The repo (memory)
-──────────────────          ───────────────             ─────────────────
-reads docs/HANDOFF.md  ──►  PHASE 0: plan + mandatory   docs/HANDOFF.md
-rules on disagreements      disagreements               docs/ frozen contracts
-judges RAW results          PHASE 1: freeze contracts   docs/ frozen gates
-writes next slice spec      PHASE 2: lane agents +
-freezes gates BEFORE        reviewer agent, commit,
-results exist          ◄──  update HANDOFF.md (raw
-                            numbers only)
+ Claude Fable (architect, effort: high)        GPT-5.5 via codex exec (builder, xhigh)
+ ─────────────────────────────────────         ─────────────────────────────────────
+ 0 ground in the repo's own docs        ──►    PHASE 0  plan + MANDATORY disagreements
+ 1 rule on every disagreement                  PHASE 1  freeze contracts in docs/
+ 2 run the gates ITSELF, judge raw             PHASE 2  ≤3-4 disjoint lanes + 1
+   evidence vs verbatim frozen gates                    reviewer lane, commit, push,
+ 3 spec next slice; freeze gates to            update docs/HANDOFF.md with RAW
+   docs/gates/ BEFORE dispatch                 results only
+ 4 dispatch fresh codex exec, async     ◄──
+ 5 post-flight: handoff updated? gates
+   untouched (git diff)? disagreements
+   raised?
+                  └────── docs/HANDOFF.md + docs/gates/ + git ──────┘
+                              the repo remembers everything
 ```
 
-The loop: **the architect thinks, the builder builds, the repo remembers, you judge.**
-Architect sessions cost minutes because state lives in `docs/HANDOFF.md`, not in chat.
-Builder sessions run for hours under Codex Goal Mode.
+## Why this shape
 
-## The five rules
+Every serious source on agent harnesses converged on the same four moves:
+separate planning context from execution context; persist state in the repo,
+not the conversation; dispatch fresh-context workers per task; verify with an
+agent that didn't write the code. This skill adds cross-vendor judgment on top —
+the builder and the judge are different models from different labs, which kills
+same-model sycophancy in review and puts each model where it measurably wins.
 
-1. Repo docs are the memory. **Not in `HANDOFF.md` = didn't happen.**
-2. The builder **never grades its own work** — raw tables and numbers only.
-3. **Disagreement is mandatory.** Silent compliance from the builder = failure.
-4. Acceptance gates are **frozen before results exist**, never edited after.
-5. Architect time is for **judgment**; builder time is for **typing**.
+**[DESIGN.md](DESIGN.md) is the full design document** — twelve rules, each with
+its mechanical enforcement and its citation (Anthropic engineering posts, the
+Fable 5 prompting guide, verified Codex CLI docs, superpowers, the Ralph loop,
+the reward-hacking literature).
 
 ## Requirements
 
-- [Claude Code](https://claude.com/claude-code) (any paid plan — the architect)
-- [Codex CLI](https://developers.openai.com/codex/cli) v0.133+ signed into a ChatGPT
-  subscription (the builder): `npm i -g @openai/codex@latest`
+- [Claude Code](https://claude.com/claude-code) on any paid plan (the architect)
+- [Codex CLI](https://developers.openai.com/codex/cli) ≥ 0.133 signed into a
+  ChatGPT plan (the builder): `npm i -g @openai/codex@latest`
 
-No API keys. Both halves run on flat-rate subscriptions.
+No API keys required. Both halves run on flat-rate subscriptions.
 
 ## Install
 
-Global (skill available in every repo):
-
 ```powershell
 # Windows
-Copy-Item -Recurse skills\architect "$env:USERPROFILE\.claude\skills\architect"
+.\install.ps1            # global (~/.claude/skills) — works in every repo
+.\install.ps1 -Project   # this repo only (.claude/skills)
 ```
 
 ```bash
 # macOS / Linux
-cp -r skills/architect ~/.claude/skills/architect
+./install.sh             # global
+./install.sh --project   # this repo only
 ```
 
-Or per-project: copy `skills/architect/` into `<repo>/.claude/skills/architect/`.
+Or just copy `skills/architect/` into `~/.claude/skills/architect/`.
 
-## Usage
+## Use
 
 One architect session per work block:
 
@@ -60,33 +68,40 @@ One architect session per work block:
 /architect
 ```
 
-Claude reads `docs/HANDOFF.md` (creating it from the template on first run), rules on
-every open disagreement, judges the latest raw results against the frozen gates, writes
-the next one-PR-sized slice spec, and ends with a paste-ready builder block.
+First run in a repo creates `docs/HANDOFF.md` and `docs/gates/` from the
+template. Every run after that: rules on the builder's open disagreements,
+judges the last slice's raw results against the frozen gates (running the gate
+commands itself — builder claims are hearsay), specs the next one-PR slice,
+freezes its gates with a commit, and dispatches a fresh
+`codex exec --sandbox workspace-write -a never -m gpt-5.5 -c
+model_reasoning_effort="xhigh"` run in the background. Prefer to babysit the
+run yourself? It prints the builder block for an interactive `codex` session
+with `/goal`.
 
-Then either:
+Judgment on a slice always happens in a *later* architect session than the one
+that dispatched it. You sit between work blocks — that's where kill/continue
+authority lives.
 
-- **Manual** — paste the block into an interactive `codex` session. It opens with
-  `/goal`, so Codex works the slice autonomously for hours.
-- **Auto** — say `/architect run it` and Claude launches
-  `codex exec --full-auto "<block>"` in the background, then verifies the handoff was
-  updated and that the builder raised disagreements.
+## The rules that make it work
 
-After the builder finishes, the next `/architect` session judges what landed in
-`HANDOFF.md` — and only what landed in `HANDOFF.md`.
+1. Not in `docs/HANDOFF.md` = didn't happen.
+2. Gates freeze in `docs/gates/` **before** results exist; a builder edit to a
+   gate file (caught by `git diff`) fails the slice automatically.
+3. Nobody grades their own work — raw results from the builder, gates run by
+   the architect, cross-model review for high-stakes slices.
+4. Disagreement is mandatory; silent compliance is a defect.
+5. Fresh builder context per slice; when a run breaks the repo, reset and
+   re-dispatch — code is cheap, rescue prompting isn't.
 
 ## What's in the box
 
 | File | Purpose |
 |------|---------|
-| [skills/architect/SKILL.md](skills/architect/SKILL.md) | The architect role: hard rules, procedure, builder block template |
-| [skills/architect/HANDOFF.template.md](skills/architect/HANDOFF.template.md) | The repo-memory file the builder maintains |
-
-## Credits
-
-Workflow concept from the "architect/builder" pattern circulating in the AI-coding
-community: spend the strong reasoning model's time on judgment, the fast agentic
-model's time on implementation, and make the repo — not the chat — the source of truth.
+| [DESIGN.md](DESIGN.md) | The research-backed design: 12 rules, failure-mode table, sources |
+| [skills/architect/SKILL.md](skills/architect/SKILL.md) | The architect role: hard rules + the 6-step procedure |
+| [skills/architect/dispatch.md](skills/architect/dispatch.md) | Verified `codex exec` commands + the PHASE 0/1/2 builder block |
+| [skills/architect/HANDOFF.template.md](skills/architect/HANDOFF.template.md) | The repo-memory file |
+| install.ps1 / install.sh | One-command install |
 
 ## License
 
