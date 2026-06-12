@@ -135,8 +135,10 @@ are normal. Print the block too, so the human can paste it into an interactive
 Verify exactly three things, with evidence: (a) `docs/HANDOFF.md` updated with
 raw results only, (b) PHASE 0 disagreements were raised (silent compliance =
 defect to log), (c) `git diff` on `docs/gates/` is clean. Report those three.
-**Do not judge the results now** — judgment belongs to the next architect
-session, after the human has seen the handoff.
+If the builder's commit failed because the sandbox protects `.git` (expected
+on some platforms), commit the working tree yourself now — only after (a)–(c)
+pass, never before. **Do not judge the results now** — judgment belongs to the
+next architect session, after the human has seen the handoff.
 
 ## Maintenance
 

@@ -19,8 +19,12 @@ background:
 codex exec -C <repo-root> --sandbox read-only --enable web_search \
   -m gpt-5.5 -c model_reasoning_effort="high" \
   -o .architect/research/<NN>-<topic>.md \
-  "<RESEARCH BLOCK>"
+  - < .architect/research/<NN>-<topic>.prompt.md
 ```
+
+Write each research block to a `.prompt.md` file and pass it via stdin (`-`),
+never as a shell argument — quote-mangling shells make codex hang waiting on
+stdin otherwise.
 
 - `--sandbox read-only`: researchers never write to the repo.
 - `--enable web_search`: web search on `codex exec` (`--search` is TUI-only —

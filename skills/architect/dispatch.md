@@ -14,11 +14,16 @@ versions.
 
 ## Canonical headless dispatch (architect-driven)
 
+Write the builder block to a file first, then pass it via **stdin** (`-`) —
+never as a shell argument. Big prompt blocks contain quotes that shells
+(especially Windows PowerShell) mangle; a mangled argument makes codex fall
+back to waiting on stdin and hang forever in a background shell.
+
 ```bash
 codex exec -C <repo-root> --sandbox workspace-write \
   -m gpt-5.5 -c model_reasoning_effort="xhigh" \
   --json -o .architect/last-run.md \
-  "<BUILDER BLOCK>"
+  - < .architect/dispatch-block.md
 ```
 
 - Run in the background (multi-hour runs are normal); read
@@ -35,6 +40,12 @@ codex exec -C <repo-root> --sandbox workspace-write \
 - Cross-model review gate: `codex review --base <branch>` (or `--uncommitted`),
   with custom focus text appended.
 - Add `.architect/` to the repo's `.gitignore`.
+- **Builder commits may fail by design**: workspace-write protects `.git` as
+  read-only on some platforms (observed on Windows, Codex 0.139 — no config
+  toggle exists; `writable_roots` does not bypass it). The builder reports the
+  exact error and leaves the tree intact; the architect commits after
+  post-flight passes. This is strictly safer: nothing reaches history until
+  after the gate tamper-check.
 
 ## Manual alternative (human-driven)
 
@@ -66,7 +77,11 @@ returns APPROVE or a numbered defect list. Nothing merges without APPROVE.
 No placeholder implementations — search the codebase before implementing;
 full implementations only. Commit per lane with descriptive messages; push;
 then update docs/HANDOFF.md with RAW results only — tables, numbers, commit
-SHAs, test output — no interpretation, no "promising". Every status claim must
+SHAs, test output — no interpretation, no "promising". If git commit fails
+because the sandbox protects .git (workspace-write mounts .git read-only on
+some platforms), do NOT delete lock files or escalate privileges: leave the
+working tree intact, record the exact error in the handoff, and stop — the
+architect commits after post-flight. Every status claim must
 be backed by a command result from this run. Verdicts belong to the architect
 and the human. Persist until the slice is fully handled end-to-end; do not
 stop at analysis or partial fixes.
