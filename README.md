@@ -100,11 +100,14 @@ flat-rate one. Both halves run on subscriptions you already have.
 ## The optional research skill
 
 `/architect-research` is the discovery-scale companion for when you're still
-deciding *what* to build: six parallel Codex web-researcher lanes (academic,
-popular repos, cutting-edge repos, production patterns, general web, expert
-opinion), ≥2 independent sources per load-bearing claim, citations only from
-URLs actually fetched. Fable verifies and writes one cited, decision-oriented
-report to `docs/research/` that feeds `/architect`'s PRD. Methodology details:
+deciding *what* to build. Scout-first, like the production deep-research
+systems: one cheap Codex scout maps the topic's terrain, Fable designs
+topic-specific researcher lanes from that map (drawing on a source-class
+tactics library — academic snowballing, dependents-not-stars repo evidence,
+production pattern mining, expert tracking), then parallel Codex researchers
+fan out under hard budgets. ≥2 independent sources per load-bearing claim,
+citations only from URLs actually fetched. Fable verifies and writes one
+cited, decision-oriented report that feeds `/architect`'s PRD. Methodology:
 [skills/architect-research/SKILL.md](skills/architect-research/SKILL.md).
 
 ## What's in the box
@@ -117,7 +120,7 @@ report to `docs/research/` that feeds `/architect`'s PRD. Methodology details:
 | [skills/architect/research.md](skills/architect/research.md) | Slice-scale inline fact-check fan-out |
 | [skills/architect/HANDOFF.template.md](skills/architect/HANDOFF.template.md) | The repo-memory file the builder maintains |
 | [skills/architect-research/SKILL.md](skills/architect-research/SKILL.md) | Discovery research: brief → plan → fan-out → verify → synthesize |
-| [skills/architect-research/lanes.md](skills/architect-research/lanes.md) | Per-lane researcher prompts with verified endpoints |
+| [skills/architect-research/lanes.md](skills/architect-research/lanes.md) | Scout block + source-class tactics library with verified endpoints |
 
 ## FAQ
 

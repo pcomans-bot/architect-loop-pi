@@ -1,7 +1,10 @@
-# Lane reference — researcher blocks and verified endpoints
+# Source-class tactics library — researcher preamble, scout block, verified endpoints
 
-Endpoints verified unauthenticated June 2026. Every lane block starts with this
-preamble, then the lane-specific objective:
+Lanes are DESIGNED per topic by the orchestrator (SKILL.md step 2); the
+sections below are search tactics and verified endpoints per source class —
+draw on whichever a designed lane needs, mix freely. Endpoints verified
+unauthenticated June 2026. Every researcher block starts with this preamble,
+then the lane-specific objective:
 
 ```
 You are a web research agent. Answer ONE assigned objective. Do not write code,
@@ -27,6 +30,18 @@ pages — two of nine researchers in one session died of context exhaustion
 before writing any findings. A researcher that dies returns NOTHING (`-o`
 only materializes on a clean finish). If a lane dies this way, bisect it into
 narrower lanes and re-dispatch; don't re-run it as-is.
+
+## Lane 0 — Scout (brainstorm scale; dispatches before lane design)
+
+Objective template: map the terrain of <topic> — do NOT gather findings.
+Return: (1) canonical terminology and the names the field itself uses;
+(2) the 5–10 load-bearing systems/papers/repos/vendors, one line each on why
+they matter; (3) the named people whose positions recur; (4) which source
+classes look rich vs empty for this topic (papers? repos? vendor blogs?
+forums?); (5) the topic's natural fault lines — the 3–6 sub-questions an
+expert would split it into. Budget ~10 searches; breadth over depth; snippet
+over page. Output is a MAP for the orchestrator to design lanes from —
+structure beats completeness.
 
 ## Lane 1 — Academic (latest papers)
 

@@ -350,15 +350,32 @@ routes: discovery scale → `/architect-research`; narrow slice facts → the
 inline fan-out above.
 
 `/architect-research` encodes the methodology the best deep-research systems
-converged on, with six lanes (academic / popular repos / cutting-edge repos /
-production-grade design patterns / general web / expert opinion) as the
-default brainstorm decomposition:
+converged on. As of v2.3 the decomposition is **scout-first and
+topic-designed, not a fixed lane taxonomy** — a 2026-06 evidence review found
+all five production deep-research systems (OpenAI DR, Anthropic, Gemini,
+Perplexity, Kimi) use adaptive planner-driven decomposition and none uses
+fixed lanes; 4/5 leading OSS frameworks generate the decomposition with an
+LLM; and dynamic beats static decomposition on GAIA
+([OAgents](https://arxiv.org/abs/2506.15741): 47.88 static → 51.52 dynamic;
+[AOrchestra](https://arxiv.org/abs/2602.03786): on-demand subagent
+construction +16.28% relative). The six source-class sections in `lanes.md`
+became a tactics library the orchestrator draws from when designing lanes:
 
+- **Scout → design → fan out.** For brainstorm-scale questions, one cheap
+  codex scout (~10 searches) maps terminology, load-bearing
+  systems, named people, and the topic's natural fault lines; the architect
+  then designs 3–6 topic-specific lanes from that map. Source-derived
+  perspective discovery is STORM's biggest measured lever (unique references
+  99.83 vs 54.36 without it); Anthropic's lead agent and OpenAI/Gemini's
+  user-visible research plans are the production analogs. Comparisons and
+  fact-finds skip the scout — recon that tells you nothing is pure latency.
 - **Effort scaling embedded in the prompt** — 1 researcher for fact-finds,
-  2–4 for comparisons, full fan-out for surveys; search budgets 5/15/25 by
-  tier; saturation stop (two no-new-fact searches); max 2 gap-fill rounds.
-  All from Anthropic's published orchestrator numbers — without them, leads
-  over- or under-delegate.
+  2–4 for comparisons, 4–6 designed lanes for surveys; search budgets 5/15/25
+  by tier; ≤5 subjects per researcher (context-exhaustion guard — a
+  researcher that fills its window dies without writing output; bisect dead
+  lanes); saturation stop (two no-new-fact searches); max 2 gap-fill rounds.
+  Scaling numbers from Anthropic's published orchestrator heuristics —
+  without them, leads over- or under-delegate.
 - **Perspective-diverse decomposition, overlap-checked** before dispatch
   (Stanford [STORM](https://arxiv.org/abs/2402.14207)'s
   perspective-guided questioning; the direct antidote to query collapse).
@@ -390,7 +407,7 @@ default brainstorm decomposition:
   Opinions are reported as dated, conflict-of-interest-flagged positions and
   never count toward the ≥2-source rule — but expert *disagreements* are
   first-class findings, since they locate the genuinely open questions.
-- **Verified lane endpoints** live in `lanes.md`: arXiv API recency queries,
+- **Verified source-class endpoints** live in `lanes.md`: arXiv API recency queries,
   Semantic Scholar citation snowballing (the most reliable "latest papers"
   method), deps.dev/ecosyste.ms dependents (adoption evidence beats stars —
   ~4.5M [fake stars](https://arxiv.org/abs/2412.13459) documented), the
@@ -413,6 +430,10 @@ default brainstorm decomposition:
 | Placeholder implementations | Gate commands are end-to-end and executable; "search before implementing; no placeholder code" in the builder block (R4) |
 | Broken repo after a long run | One slice per iteration; commit per lane; `git reset` + re-dispatch over rescue prompting (R7) |
 | Fabricated status reports | Every status claim audited against a tool result, both sides (R10) |
+| Gate-passing but unmergeable work | Judge reads the diff against spec intent, not gate output alone — METR: 38% test-pass, 0 mergeable as-is; cross-model review for high-stakes (R3, R4) |
+| Builder gaming visible gates | Gates frozen + read-only; architect-run verification; no builder iterate-against-gate feedback loops (ImpossibleBench: visible-test loops raised cheating 33%→38%) (R2, R3) |
+| Stalled unattended runs | Liveness checks on the output stream; diagnose child process tree; kill narrowest first; explicit timeouts on every long command (dispatch.md) |
+| Researcher context exhaustion | ≤5 subjects per lane; hard context rules in the preamble; bisect-and-redispatch dead lanes (lanes.md) |
 | Harness bloat / obsolescence | Thin declarative skill; per-model-generation pruning review (R12) |
 
 ---
@@ -463,6 +484,21 @@ default brainstorm decomposition:
 [AGENTS.md guide](https://developers.openai.com/codex/guides/agents-md) ·
 [Changelog](https://developers.openai.com/codex/changelog) ·
 [Codex prompting guide](https://developers.openai.com/cookbook/examples/gpt-5/codex_prompting_guide)
+
+**Evidence reviews (2026-06, architect-verified primary sources):**
+[Geng & Neubig — async SE agents, worktree+manager topology](https://huggingface.co/papers/2603.21489) ·
+[PEAR — weak planners hurt more than weak executors](https://arxiv.org/abs/2510.07505) ·
+[AgentForge — execution-grounded role decomposition](https://arxiv.org/abs/2604.13120) ·
+[ImpossibleBench — test-exploitation in coding agents](https://arxiv.org/abs/2510.20270) ·
+[METR — SWE-bench-passing PRs mostly unmergeable](https://metr.org/blog/2025-08-12-research-update-towards-reconciling-slowdown-with-time-horizons/) ·
+[Cross-Context Review — fresh-context judging wins](https://arxiv.org/abs/2603.12123) ·
+[Chroma — context rot](https://www.trychroma.com/research/context-rot) ·
+[OpenAI — harness engineering / AGENTS.md rot](https://openai.com/index/harness-engineering/) ·
+[Cognition — multi-agents: what's actually working](https://cognition.ai/blog/multi-agents-working) ·
+[OAgents — static vs dynamic decomposition on GAIA](https://arxiv.org/abs/2506.15741) ·
+[AOrchestra — on-demand subagent construction](https://arxiv.org/abs/2602.03786) ·
+[OpenAI BrowseComp — aggregation + failure modes](https://openai.com/index/browsecomp/) ·
+[DeepResearch Bench leaderboard (RACE/FACT)](https://huggingface.co/spaces/muset-ai/DeepResearch-Bench-Leaderboard/blob/main/data/leaderboard.csv)
 
 **Community / experts:**
 [obra/superpowers](https://github.com/obra/superpowers) ·

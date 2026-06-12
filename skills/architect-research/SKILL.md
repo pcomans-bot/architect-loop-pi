@@ -1,11 +1,11 @@
 ---
 name: architect-research
 description: >
-  Discovery-scale research harness: fan out parallel researchers across six
-  lanes — latest academic papers, most popular repos, cutting-edge repos, design
-  patterns from production-grade libraries, general web, and expert opinion
-  (blogs/X/talks of named experts) — then verify claims against sources and
-  synthesize a decision-oriented report. Use when
+  Discovery-scale research harness: a cheap scout researcher maps the topic,
+  the orchestrator designs topic-specific parallel researcher lanes from the
+  scout report (drawing on a source-class tactics library — academic, repos,
+  production patterns, web, experts), then verifies claims against sources and
+  synthesizes a decision-oriented report. Use when
   brainstorming a project or feature, choosing a technology, or asked to
   "research X", "what's the state of the art", "deep research". For narrow
   slice-level fact checks inside the build loop, /architect handles those inline.
@@ -14,17 +14,19 @@ effort: high
 
 # Architect Research
 
-You are the research orchestrator. Researchers gather; **you** decompose,
-verify, and write — judgment never delegates. Per-lane researcher blocks and
-verified endpoints are in `lanes.md` next to this file; read it when you fan
-out.
+You are the research orchestrator. Researchers gather; **you** design the
+decomposition, verify, and write — judgment never delegates. The source-class
+tactics library (search mechanics + verified endpoints per source class) is in
+`lanes.md` next to this file; read it when you design lanes.
 
 ## Scale before anything
 
 - **Simple fact-find** → answer directly or 1 researcher (3–10 searches).
   Don't run a harness on a question one search answers.
-- **Comparison / focused question** → 2–4 researchers on distinct perspectives.
-- **Brainstorm / SOTA survey / technology choice** → the full five-lane fan-out.
+- **Comparison / focused question** → 2–4 researchers on distinct
+  perspectives, no scout — you already know the terrain.
+- **Brainstorm / SOTA survey / technology choice** → scout first, then a
+  designed fan-out of 4–6 researchers.
 
 ## Procedure
 
@@ -36,25 +38,33 @@ informs, constraints, and what "answered" looks like. The brief is the north
 star — every later step is checked against it, and it's restated at the top of
 the final report so the reader can audit scope drift.
 
-### 2. Plan (perspective-diverse, overlap-checked)
+### 2. Scout, then design the lanes
 
-Decompose into 3–5 sub-questions from **distinct perspectives** — different
-angles on the topic, never keyword variants of one query. For brainstorm scale,
-default to the five lanes:
+Every production deep-research system and 4/5 leading OSS frameworks use
+LLM-designed, topic-specific decomposition — none uses a fixed lane taxonomy.
+Lanes are designed per topic, not taken from a template.
 
-1. **Academic** — latest papers, surveys, citation snowballing
-2. **Popular repos** — what the ecosystem actually uses
-3. **Cutting-edge repos** — what's emerging right now (and isn't hype)
-4. **Production patterns** — how the best libraries in the niche design it
-5. **General web** — postmortems, comparisons, official docs, everything else
-6. **Expert opinion** *(second wave)* — what the named experts in the field
-   say on their blogs, talks, and X/social. Dispatches in step 4, not here:
-   its roster (survey authors, top-repo maintainers, recurring names) comes
-   from the first wave's findings.
+**Scout (brainstorm scale only):** dispatch ONE cheap researcher (~10
+searches, same codex command as step 3) to map the terrain: canonical
+terminology, the 5–10 load-bearing systems/papers/repos, the named people,
+which source classes look rich vs empty, and the topic's natural fault lines.
+The scout returns a map, not findings — discovering the topic's actual
+perspectives from sources is what nearly doubled source diversity in STORM's
+ablations. Skip the scout when you already know the terrain (comparisons,
+fact-finds) — an upfront pass that tells you nothing new is pure latency.
 
-Review the query set for overlap before dispatch — overlapping researchers
-duplicate work and leave gaps. State the plan in a few lines; proceed unless
-the user redirects.
+**Design (you, from the scout report):** decompose into 3–6 sub-questions
+along the topic's own fault lines — distinct perspectives, never keyword
+variants of one query. For each lane pick the source-class tactics it needs
+from `lanes.md` (academic snowballing, dependents-not-stars repo evidence,
+production-grade pattern mining, general web, expert tracking) — one lane may
+mix tactics; most topics don't need every source class. Scope each lane to
+≤5 subjects and give every lane an explicit search budget. Reserve **expert
+opinion** as a second-wave lane: its roster (survey authors, maintainers,
+recurring names) comes from the first wave's findings.
+
+Review the lane set for overlap AND for gaps against the brief before
+dispatch. State the plan in a few lines; proceed unless the user redirects.
 
 ### 3. Fan out
 
