@@ -63,11 +63,14 @@ sidesteps that entirely (pi reads the file as the message).
 Single-lane slice (dispatch in the main checkout):
 
 ```bash
-pi -p --mode json \
+pi -p --mode json --session-id <slice> \
   --model "${ARCHITECT_BUILDER_MODEL:-deepseek/deepseek-v4-pro}" --thinking xhigh \
   @.architect/dispatch-block.md \
   > .architect/last-run.jsonl
 ```
+
+`--session-id <slice>` pins a stable session handle so a same-slice follow-up can
+resume this exact run (see below) — it creates the session if missing.
 
 `--mode json` streams newline-delimited events to the file for liveness
 monitoring; the builder's final message is the last assistant event in that
@@ -89,7 +92,7 @@ git -C <repo-root> worktree add .architect/wt/<slice>-<NN> \
 
 # write the lane's builder block, then dispatch (background, all lanes parallel)
 ( cd <repo-root>/.architect/wt/<slice>-<NN> && \
-  pi -p --mode json \
+  pi -p --mode json --session-id <slice>-<NN> \
     --model "${ARCHITECT_BUILDER_MODEL:-deepseek/deepseek-v4-pro}" --thinking xhigh \
     @block.md \
     > <repo-root>/.architect/wt/<slice>-<NN>.last-run.jsonl ) &
@@ -125,11 +128,12 @@ conflicting lane and re-spec; don't hand-resolve builder conflicts.
 - Effort: `--thinking xhigh` default for unattended work; the architect
   downgrades routine, tightly-specified lanes to `--thinking high`.
 - Same-slice follow-up (e.g. answering PHASE 0 disagreements after the human
-  rules): from the lane's worktree, `pi --continue -p @followup.md` resumes that
-  lane's most recent session (each lane has its own cwd, so this is unambiguous).
-  To target a specific session, capture its id and use `pi --session <id> -p
-  @followup.md`. Never resume across slices — every slice gets a fresh context (a
-  fresh `pi -p` with no `--continue`/`--session` is already a clean session).
+  rules): resume the lane's exact session by its pinned handle —
+  `pi --session-id <slice>-<NN> -p @followup.md` (`pi --help`: "use exact project
+  session ID, creating it if missing"). Tracking the id explicitly is more
+  deterministic than `--continue`'s "most recent session in the cwd". Never resume
+  across slices — every slice gets a fresh context (a fresh `pi -p` with a new
+  `--session-id` is already a clean session).
 - Cross-model note: the builder (DeepSeek) and the judge (Claude/Fable) are
   already different labs, so the architect running the gates itself is the
   cross-vendor check. For an extra adversarial pass on high-stakes slices, run a

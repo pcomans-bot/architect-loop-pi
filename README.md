@@ -18,9 +18,11 @@ anything is integrated.
 
 ```bash
 git clone https://github.com/pcomans-bot/architect-loop-pi
-cd architect-loop-pi && ./install.sh     # Windows: .\install.ps1
-npm i -g --ignore-scripts @earendil-works/pi-coding-agent   # the builder (pi)
-export DEEPSEEK_API_KEY=sk-...            # see dispatch.md to use GLM/Kimi/etc.
+cd architect-loop-pi
+npm config set min-release-age 4                                  # supply-chain seasoning (all npm installs)
+npm i -g --ignore-scripts @earendil-works/pi-coding-agent@latest  # the builder (pi)
+./install.sh                                                      # skills + pi-search-hub  (Windows: .\install.ps1)
+export DEEPSEEK_API_KEY=sk-...                                    # see dispatch.md to use GLM/Kimi/etc.
 ```
 
 `./install.sh --project` installs the **skills** to the current repo
@@ -31,6 +33,14 @@ package always install globally. You need
 [`pi-search-hub`](https://pi.dev/packages/pi-search-hub) package for the
 `web_search` tool; set `TAVILY_API_KEY` for better search, else it uses keyless
 DuckDuckGo.
+
+Two supply-chain settings apply to **every** npm install (pi, pi-search-hub, and
+their deps): `npm config set min-release-age 4` (in `~/.npmrc`) only installs
+versions public ≥4 days, so a poisoned release has time to be caught and yanked;
+`--ignore-scripts` blocks install-time scripts (the common npm-poisoning vector).
+Raise the age for more seasoning — but note ≥5 days currently pulls an older pi
+0.78.x, since 0.79.x is still recent. (`ddgs`, the keyless-search Python dep, is
+pip-installed and has no age gate.)
 
 ## Use (two commands)
 

@@ -15,6 +15,10 @@ foreach ($skill in Get-ChildItem -Directory $srcRoot) {
     Write-Host "Installed /$($skill.Name) to $dest"
 }
 
+# Supply-chain seasoning for every npm install (pi, pi-search-hub, deps): only
+# install versions public >=4 days, so a poisoned release can be caught/yanked first.
+if (Get-Command npm -ErrorAction SilentlyContinue) { npm config set min-release-age 4 *> $null }
+
 # Builder: pi pointed at a cheap model (DeepSeek by default).
 $pi = Get-Command pi -ErrorAction SilentlyContinue
 if ($pi) {
@@ -22,7 +26,8 @@ if ($pi) {
     # web_search tool: pi-search-hub (keyless DuckDuckGo by default; Tavily etc. optional)
     pi install npm:pi-search-hub *> $null; Write-Host "Installed pi-search-hub (web_search tool)"
 } else {
-    Write-Host "pi not found - install the builder: npm i -g --ignore-scripts @earendil-works/pi-coding-agent, then: pi install npm:pi-search-hub"
+    Write-Host "pi not found - install the builder: npm i -g --ignore-scripts @earendil-works/pi-coding-agent@latest"
+    Write-Host "  then re-run .\install.ps1 (it installs pi-search-hub for web_search)"
 }
 # Keyless DuckDuckGo search needs the ddgs Python package
 if (Get-Command pip -ErrorAction SilentlyContinue) { pip install --quiet ddgs *> $null }
