@@ -14,33 +14,21 @@ anything is integrated.
 > upstream [DanMcInerney/architect-loop](https://github.com/DanMcInerney/architect-loop)
 > runs the same loop on flat-rate Codex instead.
 
-## Install
-
-**Option A — DevPod (recommended)**
+## Install (30 seconds)
 
 ```bash
-export DEEPSEEK_API_KEY=sk-...   # forwarded into the container automatically
-devpod up https://github.com/pcomans-bot/architect-loop-pi --ide none
-```
-
-The devcontainer handles Node 22, Python, `pi` install, and `./install.sh`
-automatically. Copy `.env.example` → `.env` inside the workspace for
-persistent keys; see `.env.example` for all variables.
-
-**Option B — Manual**
-
-```bash
-git clone https://github.com/pcomans-bot/architect-loop-pi
-cd architect-loop-pi && ./install.sh     # Windows: .\install.ps1
-npm i -g --ignore-scripts @earendil-works/pi-coding-agent
-export DEEPSEEK_API_KEY=sk-...           # see dispatch.md to use GLM/Kimi/etc.
+git clone https://github.com/DanMcInerney/architect-loop
+cd architect-loop && ./install.sh        # Windows: .\install.ps1
+npm i -g --ignore-scripts @earendil-works/pi-coding-agent   # the builder (pi)
+export DEEPSEEK_API_KEY=sk-...            # see dispatch.md to use GLM/Kimi/etc.
 ```
 
 `./install.sh --project` installs to the current repo only instead of globally.
 You need [Claude Code](https://claude.com/claude-code) on any paid plan, `pi`, and
-a `DEEPSEEK_API_KEY`. `install.sh` also installs the `web_search` pi extension
-(`extensions/web-search/`); set `TAVILY_API_KEY` for better search, else it uses
-keyless DuckDuckGo.
+a `DEEPSEEK_API_KEY`. `install.sh` also installs the
+[`pi-search-hub`](https://pi.dev/packages/pi-search-hub) package for the
+`web_search` tool; set `TAVILY_API_KEY` for better search, else it uses keyless
+DuckDuckGo.
 
 ## Use (two commands)
 
@@ -97,7 +85,7 @@ taxonomy:
 - **Parallel pi researchers** run under hard budgets: search caps, ≤5
   subjects per lane, saturation stop, strict findings discipline (URL + date
   + quote + confidence tag; NOT FOUND beats inference; no recommendations).
-  They search with the bundled `web_search` tool and curl the keyless data
+  They search with the `web_search` tool and curl the keyless data
   APIs. Expert opinion runs as a second wave, roster-seeded by the first.
 - **Fable verifies and writes.** ≥2 independent sources per load-bearing
   claim, adversarial falsification searches, citations only from URLs
@@ -134,7 +122,6 @@ Each design choice is source-backed (full citations in
 | [skills/architect/HANDOFF.template.md](skills/architect/HANDOFF.template.md) | The repo-memory file |
 | [skills/architect-research/SKILL.md](skills/architect-research/SKILL.md) | Research orchestration: scout → design → fan out → verify → write |
 | [skills/architect-research/lanes.md](skills/architect-research/lanes.md) | Scout block + source-class tactics library with verified endpoints |
-| [extensions/web-search/](extensions/web-search/) | pi extension: a `web_search` tool (Tavily or keyless DuckDuckGo) for researchers |
 | [tests/validate_skills.py](tests/validate_skills.py) | Repo sanity checks (frontmatter limits, links, fences) |
 
 ## FAQ

@@ -15,29 +15,16 @@ foreach ($skill in Get-ChildItem -Directory $srcRoot) {
     Write-Host "Installed /$($skill.Name) to $dest"
 }
 
-# Install the web_search tool (pi extension) globally so researchers can search.
-$extSrc = Join-Path $PSScriptRoot "extensions\web-search"
-$extDest = Join-Path $env:USERPROFILE ".pi\agent\extensions\web-search"
-if (Test-Path $extSrc) {
-    New-Item -ItemType Directory -Force (Split-Path $extDest) | Out-Null
-    if (Test-Path $extDest) { Remove-Item -Recurse -Force $extDest }
-    Copy-Item -Recurse $extSrc $extDest
-    $nm = Join-Path $extDest "node_modules"
-    if (Test-Path $nm) { Remove-Item -Recurse -Force $nm }
-    if (Get-Command npm -ErrorAction SilentlyContinue) {
-        Push-Location $extDest; npm install --omit=dev --silent; Pop-Location
-        Write-Host "Installed web_search extension to $extDest"
-    } else {
-        Write-Host "web_search extension copied to $extDest - run 'npm install' there once npm is available"
-    }
-}
-
 # Builder: pi pointed at a cheap model (DeepSeek by default).
 $pi = Get-Command pi -ErrorAction SilentlyContinue
 if ($pi) {
     Write-Host "pi found: $(pi --version)"
+    # web_search tool: pi-search-hub (keyless DuckDuckGo by default; Tavily etc. optional)
+    pi install npm:pi-search-hub *> $null; Write-Host "Installed pi-search-hub (web_search tool)"
 } else {
-    Write-Host "pi not found - install the builder: npm i -g --ignore-scripts @earendil-works/pi-coding-agent"
+    Write-Host "pi not found - install the builder: npm i -g --ignore-scripts @earendil-works/pi-coding-agent, then: pi install npm:pi-search-hub"
 }
+# Keyless DuckDuckGo search needs the ddgs Python package
+if (Get-Command pip -ErrorAction SilentlyContinue) { pip install --quiet ddgs *> $null }
 Write-Host "Set your builder key:  `$env:DEEPSEEK_API_KEY=sk-...   (see skills/architect/dispatch.md to switch models)"
 Write-Host "Optional better search: `$env:TAVILY_API_KEY=tvly-...  (else web_search uses keyless DuckDuckGo)"

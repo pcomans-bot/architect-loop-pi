@@ -335,9 +335,9 @@ decisions behind it:
   push detail to referenced files).
 - **pi researchers, Fable judgment.** Research is coverage work — it runs at
   `high` thinking (xhigh buys nothing for gathering), with a reduced tool set (no
-  `write`/`edit`): a `web_search` tool (the bundled `extensions/web-search/`
-  extension — Tavily or keyless DuckDuckGo) plus `curl` for the keyless data
-  endpoints in `lanes.md`/`research.md`.
+  `write`/`edit`): a `web_search` tool (the `pi-search-hub` package — keyless
+  DuckDuckGo, or Tavily with a key) plus `curl` for the keyless data endpoints in
+  `lanes.md`/`research.md`.
   Verification of load-bearing claims and PRD authorship stay with the
   architect — researchers are explicitly forbidden from making
   recommendations, the research-side equivalent of "raw results only" (R3).

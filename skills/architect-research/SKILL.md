@@ -83,9 +83,9 @@ tools plus `bash` for `curl`; the report is the run's stdout:
 Write each lane block to a `.prompt.md` file and pass it as `@<file>` — never as
 a shell argument; `@file` avoids quote-mangling.
 
-(General search is the `web_search` tool from the bundled extension
-(`extensions/web-search/` — Tavily if `TAVILY_API_KEY` set, else keyless
-DuckDuckGo); source-class endpoints are `curl`'d directly via `bash` — see the
+(General search is the `web_search` tool from the `pi-search-hub` package
+(keyless DuckDuckGo by default, Tavily if `TAVILY_API_KEY` set); source-class
+endpoints are `curl`'d directly via `bash` — see the
 endpoint library in `lanes.md`. `--tools read,grep,find,ls,bash,web_search` adds
 search without `write`/`edit`, so researchers don't touch the repo. Launch ONE
 canary lane and confirm it starts cleanly and can reach search before fanning

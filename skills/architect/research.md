@@ -31,12 +31,11 @@ as a shell argument; `@file` avoids the quote-mangling that breaks big prompts.
 - `--tools read,grep,find,ls,bash,web_search`: no `write`/`edit`, so researchers
   don't modify the repo; the report comes back on stdout. `bash` is for `curl` to
   the keyless data APIs, `web_search` is the general-search tool.
-- **Web search**: the `web_search` tool comes from the bundled extension
-  (`extensions/web-search/`, installed by `install.sh`) — Tavily if
-  `TAVILY_API_KEY` is set, else keyless DuckDuckGo. For source-class endpoints
-  (arXiv, Semantic Scholar, OpenAlex, HN Algolia) researchers `curl` directly;
-  those need no search engine. The endpoint library is in
-  `../architect-research/lanes.md`.
+- **Web search**: the `web_search` tool comes from the `pi-search-hub` package
+  (installed by `install.sh`) — keyless DuckDuckGo by default, Tavily if
+  `TAVILY_API_KEY` is set. For source-class endpoints (arXiv, Semantic Scholar,
+  OpenAlex, HN Algolia) researchers `curl` directly; those need no search engine.
+  The endpoint library is in `../architect-research/lanes.md`.
 - Effort `high`, not `xhigh` — research is coverage work; xhigh buys nothing
   here (capability, not cost). Synthesis is the architect's.
 - Scope each researcher to ≤5 subjects and put hard context rules in the

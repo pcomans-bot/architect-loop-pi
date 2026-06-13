@@ -24,11 +24,10 @@ prior knowledge without flagging it. End with the 2-3 findings most likely to
 change a design decision.
 ```
 
-Researchers search with the **`web_search` tool** (from the bundled
-`extensions/web-search/` extension — Tavily if `TAVILY_API_KEY` is set, else
-keyless DuckDuckGo) and reach the keyless domain APIs in each lane below with
-`bash`+`curl`. No `write`/`edit` (they don't touch the repo); the report is the
-run's stdout.
+Researchers search with the **`web_search` tool** (from the `pi-search-hub`
+package — keyless DuckDuckGo by default, Tavily if `TAVILY_API_KEY` is set) and
+reach the keyless domain APIs in each lane below with `bash`+`curl`. No
+`write`/`edit` (they don't touch the repo); the report is the run's stdout.
 
 **Lane scoping rule (learned 2026-06-12):** cap each researcher at ~5 subjects
 (repos, vendors, people). Doc-heavy lanes burn the context window on fetched
@@ -163,13 +162,11 @@ docs/changelogs, pricing/operational constraints.
 ### General web search
 
 Lanes 1–4 use the keyless domain APIs above (curl) and need no search engine. For
-*general* search, call the **`web_search` tool** (`web_search(query,
-max_results?)`) — it returns ranked `title / url / snippet`. The backend is the
-bundled `extensions/web-search/` extension: Tavily (agent-optimized) when
-`TAVILY_API_KEY` is set, else keyless DuckDuckGo; swap the backend by editing that
-one file. If the tool is unavailable, `curl` a search API directly as a fallback
-(e.g. keyless `https://api.duckduckgo.com/?format=json&q=<q>`, shallow; or
-Zhipu/GLM `https://open.bigmodel.cn/api/paas/v4/web_search` with `ZAI_API_KEY`).
+*general* search, call the **`web_search` tool** from the `pi-search-hub` package
+— keyless DuckDuckGo by default, Tavily when `TAVILY_API_KEY` is set (plus ~16
+other providers; see the package docs). It returns ranked `title / url / snippet`.
+If the tool is unavailable, `curl` a search API directly as a fallback (e.g.
+keyless `https://api.duckduckgo.com/?format=json&q=<q>`, shallow).
 
 After a hit, fetch the chosen source directly (`curl -sL <url>`) to quote it —
 the search snippet locates the source; the citation must come from the page.
