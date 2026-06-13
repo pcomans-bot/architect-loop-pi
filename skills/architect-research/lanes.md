@@ -25,7 +25,7 @@ change a design decision.
 ```
 
 Researchers search with the **`web_search` tool** (from the `pi-search-hub`
-package — keyless DuckDuckGo by default, Tavily if `TAVILY_API_KEY` is set) and
+package — keyless DuckDuckGo by default, Tavily if `SEARCH_TAVILY_API_KEY` is set) and
 reach the keyless domain APIs in each lane below with `bash`+`curl`. No
 `write`/`edit` (they don't touch the repo); the report is the run's stdout.
 
@@ -163,7 +163,7 @@ docs/changelogs, pricing/operational constraints.
 
 Lanes 1–4 use the keyless domain APIs above (curl) and need no search engine. For
 *general* search, call the **`web_search` tool** from the `pi-search-hub` package
-— keyless DuckDuckGo by default, Tavily when `TAVILY_API_KEY` is set (plus ~16
+— keyless DuckDuckGo by default, Tavily when `SEARCH_TAVILY_API_KEY` is set (plus ~16
 other providers; see the package docs). It returns ranked `title / url / snippet`.
 If the tool is unavailable, `curl` a search API directly as a fallback (e.g.
 keyless `https://api.duckduckgo.com/?format=json&q=<q>`, shallow).

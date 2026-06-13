@@ -15,21 +15,27 @@ foreach ($skill in Get-ChildItem -Directory $srcRoot) {
     Write-Host "Installed /$($skill.Name) to $dest"
 }
 
-# Supply-chain seasoning for every npm install (pi, pi-search-hub, deps): only
-# install versions public >=4 days, so a poisoned release can be caught/yanked first.
-if (Get-Command npm -ErrorAction SilentlyContinue) { npm config set min-release-age 4 *> $null }
-
 # Builder: pi pointed at a cheap model (DeepSeek by default).
 $pi = Get-Command pi -ErrorAction SilentlyContinue
 if ($pi) {
     Write-Host "pi found: $(pi --version)"
-    # web_search tool: pi-search-hub (keyless DuckDuckGo by default; Tavily etc. optional)
-    pi install npm:pi-search-hub *> $null; Write-Host "Installed pi-search-hub (web_search tool)"
+    # web_search tool: pi-search-hub. Fail loudly — researchers depend on web_search.
+    pi install npm:pi-search-hub
+    if ($LASTEXITCODE -eq 0) {
+        Write-Host "Installed pi-search-hub (web_search tool)"
+    } else {
+        Write-Warning "Failed to install pi-search-hub (web_search for researchers). Fix the error above, then run: pi install npm:pi-search-hub"
+    }
 } else {
     Write-Host "pi not found - install the builder: npm i -g --ignore-scripts @earendil-works/pi-coding-agent@latest"
     Write-Host "  then re-run .\install.ps1 (it installs pi-search-hub for web_search)"
 }
-# Keyless DuckDuckGo search needs the ddgs Python package
-if (Get-Command pip -ErrorAction SilentlyContinue) { pip install --quiet ddgs *> $null }
-Write-Host "Set your builder key:  `$env:DEEPSEEK_API_KEY=sk-...   (see skills/architect/dispatch.md to switch models)"
-Write-Host "Optional better search: `$env:TAVILY_API_KEY=tvly-...  (else web_search uses keyless DuckDuckGo)"
+
+# Keyless DuckDuckGo (the default web_search backend) needs the `ddgs` Python pkg.
+# We don't auto-install it (no global pip mutation) — just say so if it's missing.
+python -c "import ddgs" 2>$null
+if ($LASTEXITCODE -ne 0) { Write-Host "NOTE: keyless DuckDuckGo search needs the 'ddgs' package - run: pip install ddgs" }
+
+Write-Host "Set your builder key:  `$env:DEEPSEEK_API_KEY=sk-...           (see skills/architect/dispatch.md to switch models)"
+Write-Host "Optional better search: `$env:SEARCH_TAVILY_API_KEY=tvly-...     (else web_search uses keyless DuckDuckGo)"
+Write-Host "Optional hardening:     npm config set min-release-age 4        (season npm installs; see README)"

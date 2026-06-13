@@ -33,7 +33,7 @@ as a shell argument; `@file` avoids the quote-mangling that breaks big prompts.
   the keyless data APIs, `web_search` is the general-search tool.
 - **Web search**: the `web_search` tool comes from the `pi-search-hub` package
   (installed by `install.sh`) — keyless DuckDuckGo by default, Tavily if
-  `TAVILY_API_KEY` is set. For source-class endpoints (arXiv, Semantic Scholar,
+  `SEARCH_TAVILY_API_KEY` is set. For source-class endpoints (arXiv, Semantic Scholar,
   OpenAlex, HN Algolia) researchers `curl` directly; those need no search engine.
   The endpoint library is in `../architect-research/lanes.md`.
 - Effort `high`, not `xhigh` — research is coverage work; xhigh buys nothing

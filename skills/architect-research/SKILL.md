@@ -84,7 +84,7 @@ Write each lane block to a `.prompt.md` file and pass it as `@<file>` — never 
 a shell argument; `@file` avoids quote-mangling.
 
 (General search is the `web_search` tool from the `pi-search-hub` package
-(keyless DuckDuckGo by default, Tavily if `TAVILY_API_KEY` set); source-class
+(keyless DuckDuckGo by default, Tavily if `SEARCH_TAVILY_API_KEY` set); source-class
 endpoints are `curl`'d directly via `bash` — see the
 endpoint library in `lanes.md`. `--tools read,grep,find,ls,bash,web_search` adds
 search without `write`/`edit`, so researchers don't touch the repo. Launch ONE
