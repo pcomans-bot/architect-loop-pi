@@ -205,7 +205,8 @@ opinion), exercises the build in its own terminal, and returns an independent
 SHIP / DO-NOT-SHIP:
 
 ```bash
-# read-only + bash/tmux for live play; criteria-only block, no architect opinion
+# no write/edit, but bash-capable (bash can still mutate the checkout) for live
+# play — run only in a disposable/trusted worktree; criteria-only block, no architect opinion
 TOOLS=read,grep,find,ls,bash ${CLAUDE_SKILL_DIR}/scripts/dispatch-pi.sh \
   judge-<slice> .architect/judge-block.md .architect/judge.out
 ```

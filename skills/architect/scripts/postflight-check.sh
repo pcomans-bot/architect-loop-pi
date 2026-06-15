@@ -29,6 +29,16 @@ GATES_DIR="${GATES_DIR:-docs/gates}"
 git -C "$WT" rev-parse --git-dir >/dev/null 2>&1 || {
   echo "FATAL: $WT is not a git working tree" >&2; exit 2; }
 
+# Validate the refs up front. Checks 1 and 2 below test only for EMPTY git
+# output, so an unresolvable FREEZE or BRANCH (typo, missing lane branch) would
+# otherwise make git error to a suppressed stderr, return empty stdout, and read
+# as "gates untampered / no commits" — a vacuous PASS on the two load-bearing
+# gates. Fail hard instead of certifying nothing.
+for ref in "$FREEZE" "$BRANCH"; do
+  git -C "$WT" rev-parse --verify --quiet "${ref}^{commit}" >/dev/null || {
+    echo "FATAL: '$ref' is not a valid commit or branch in $WT" >&2; exit 2; }
+done
+
 fails=0
 pass() { printf 'PASS  %s\n' "$1"; }
 fail() { printf 'FAIL  %s\n' "$1"; fails=$((fails+1)); }
