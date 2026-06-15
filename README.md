@@ -63,13 +63,9 @@ automatically; on a host machine it's opt-in (it changes your global npm config)
 Raise the number for more seasoning — but note ≥5 days currently pulls an older pi
 0.78.x, since 0.79.x is still recent.
 
-**Confined parallel lanes** use `confined-pi.sh`, which isolates each builder with a
-Linux user+mount namespace so it can't write outside its worktree. It needs the
-container to permit unprivileged user namespaces (`/proc/sys/user/max_user_namespaces
-> 0`; some Docker setups need `--security-opt seccomp=unconfined` or userns-remap).
-The wrapper **refuses to run** rather than risk an unconfined escape if they're
-unavailable — fall back to running lanes sequentially in the main checkout. The bundled
-devcontainer allows them.
+**Confined parallel lanes** use `confined-pi.sh` — see [Isolation model](#isolation-model)
+below. The devcontainer allows it; some Docker setups need
+`--security-opt seccomp=unconfined` or userns-remap.
 
 ## Use (two commands)
 
@@ -167,6 +163,8 @@ Each design choice is source-backed (full citations in
 | [skills/architect-research/SKILL.md](skills/architect-research/SKILL.md) | Research orchestration: scout → design → fan out → verify → write |
 | [skills/architect-research/lanes.md](skills/architect-research/lanes.md) | Scout block + source-class tactics library with verified endpoints |
 | [tests/validate_skills.py](tests/validate_skills.py) | Repo sanity checks (frontmatter limits, links, fences) |
+| [skills/architect/HARNESS-LEARNINGS.template.md](skills/architect/HARNESS-LEARNINGS.template.md) | Template for capturing harness-level lessons during a run; contribute completed logs back as a PR |
+| [AGENTS.md](AGENTS.md) | Instructions for agents/contributors working on this repo; lists known harness lessons |
 
 ## FAQ
 
@@ -190,13 +188,79 @@ can paste it into an interactive `pi` session instead.
 **Why two skills?** Research-grade fan-out costs ~15× chat-level tokens — it
 should be a deliberate act, not a side-effect of the build loop.
 
+## Isolation model
+
+`pi` has no built-in sandbox. For single-lane runs this just means trusting
+the container (which the devcontainer provides). For **parallel lanes** it
+creates a subtle trap: `cd <worktree> && pi` is *not* real isolation.
+
+**The problem:** if the builder block references absolute paths — e.g.
+`@/home/user/myrepo/.architect/block.md` — the builder treats the absolute
+path as its project root and writes to the *main checkout*, not the worktree.
+Two parallel lanes then corrupt the same tree.
+
+**The fix — `confined-pi.sh`:** wraps each lane in a Linux user+mount
+namespace (`unshare -Urm`) and bind-mounts the worktree *over* the canonical
+repo path before starting `pi`. Even absolute `/home/user/myrepo/...` writes
+resolve into the worktree; the real checkout is unreachable. Each lane gets
+its own namespace at the same canonical path, so lanes neither collide nor
+escape.
+
+```
+lane A:  worktree-A  →  bind-mount over /repo  →  pi sees /repo = worktree-A
+lane B:  worktree-B  →  bind-mount over /repo  →  pi sees /repo = worktree-B
+main checkout:  untouched throughout
+```
+
+`confined-pi.sh` **refuses to run** (non-zero exit, clear message) if
+unprivileged user namespaces are unavailable
+(`/proc/sys/user/max_user_namespaces > 0`). The safe fallback is running
+lanes **sequentially** in the main checkout using the plain dispatch commands
+in `dispatch.md`.
+
+## Harness learnings
+
+Running the loop surfaces harness-level lessons (dispatch patterns, stall
+behaviour, isolation edge cases) that are not project-specific. Capture them
+as you go using the template in
+[skills/architect/HARNESS-LEARNINGS.template.md](skills/architect/HARNESS-LEARNINGS.template.md) and
+contribute your completed log back as a PR — surviving entries are distilled
+into the skills so every future run benefits.
+
+See [AGENTS.md](AGENTS.md) for what's already been learned and the
+no-jargon rule for entries.
+
+## Changes from upstream
+
+This is a fork of
+[DanMcInerney/architect-loop](https://github.com/DanMcInerney/architect-loop).
+The loop shape and discipline are unchanged. What differs:
+
+| Area | Upstream (DanMcInerney) | This fork |
+|---|---|---|
+| **Builder CLI** | Codex (OpenAI CLI) | `pi` (earendil-works) |
+| **Builder model** | GPT-5.5 via ChatGPT subscription | DeepSeek V4 via API key (swappable) |
+| **Cost model** | Flat-rate ChatGPT sub | Metered — cheap enough that cost isn't a constraint |
+| **Sandbox** | Codex has a built-in sandbox | None — isolation is the container + `confined-pi.sh` for parallel lanes |
+| **web_search** | Native Codex tool | `pi-search-hub` package (Tavily or keyless DuckDuckGo) |
+| **Stall recovery** | Manual triage | `dispatch-pi.sh` auto-detects 0-byte/0-CPU stalls and re-dispatches |
+| **Parallel isolation** | Worktree + Codex sandbox | `confined-pi.sh` namespace bind-mount (cd+worktree alone is not sufficient) |
+| **Post-flight** | Manual checks | `postflight-check.sh` mechanises gate tamper / boundary / no-commit checks |
+| **Learnings** | — | `skills/architect/HARNESS-LEARNINGS.template.md` + contribution path |
+
+The `dispatch-pi.sh`, `confined-pi.sh`, and `postflight-check.sh` scripts,
+and the lessons folded into SKILL.md and dispatch.md, all came from the first
+real run of this fork. They address failure modes that didn't arise with Codex
+because Codex's sandbox handled isolation and its dispatch path was more stable.
+
 ## Origin
 
 The original idea came from [this X post by @jumperz](https://x.com/jumperz/status/2065454404623384859)
-about using Fable with Opus subagents. I built architect-loop because I couldn't
-find an easy way to run that pattern, and because it seemed useful to add a few
-extra operational best practices on top of what Fable can already do when calling
-Opus subagents.
+about using Fable with Opus subagents. [DanMcInerney](https://github.com/DanMcInerney/architect-loop)
+built architect-loop to make that pattern easy to run. This fork swaps the
+builder from Codex to `pi` + DeepSeek, adds the operational hardening that
+`pi`'s lack of a sandbox requires, and establishes a learnings-contribution
+path so runs feed back into the harness.
 
 ## License
 
