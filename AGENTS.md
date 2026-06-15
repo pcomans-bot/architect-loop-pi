@@ -32,7 +32,7 @@ not specific to the project you're building.
 
 **Capture these as you go:**
 
-1. Copy `skills/architect/HARNESS-LEARNINGS.template.md` to `docs/HARNESS-LEARNINGS.md`
+1. Copy `skills/architect/templates/HARNESS-LEARNINGS.template.md` to `docs/HARNESS-LEARNINGS.md`
    in your target repo at the start of your first session.
 2. Log every harness-level issue as it happens — follow the template format.
 3. At the end of the run, open a PR against this repo with your completed
@@ -57,13 +57,13 @@ already been distilled into the skills:
 - **Dispatch launch stalls (~50% of fresh dispatches):** a fresh `pi`
   dispatch can draw a model connection that never streams. Fix: watch
   output bytes + `/proc` CPU jiffies; kill + re-dispatch with a new session
-  id. Automated in `skills/architect/dispatch-pi.sh`.
+  id. Automated in `skills/architect/scripts/dispatch-pi.sh`.
 
 - **`cd worktree && pi` is not isolation for parallel lanes:** if the
   builder block carries absolute paths, the builder anchors to the canonical
   repo root and writes outside its worktree, corrupting the main checkout.
   Fix: Linux user+mount namespace bind-mount. Automated in
-  `skills/architect/confined-pi.sh`.
+  `skills/architect/scripts/confined-pi.sh`.
 
 - **Vacuous tests pass gates but prove nothing:** a test that re-derives
   its expected value from literals without calling production code is green

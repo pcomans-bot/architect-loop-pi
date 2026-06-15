@@ -64,7 +64,7 @@ commands and the builder block template: `dispatch.md` next to this file.
   dispatch in a new environment is a canary — confirm it starts cleanly, picks up
   the model, and reads the `@block.md` prompt before fanning out.
 - Read `docs/HANDOFF.md` in full plus every `docs/gates/` file it references.
-  If missing, create both from `HANDOFF.template.md` (next to this file), fill
+  If missing, create both from `templates/HANDOFF.template.md` (next to this file), fill
   the header from the repo, ask the human only for what isn't derivable.
   Keep the handoff a short table of contents (~150 lines): TL;DR + pointers
   to gates/lanes/docs; archive finished-slice detail out of it each session —
@@ -196,8 +196,9 @@ set** — an out-of-bounds write fails the lane, (e) `git log <freeze>..` on the
 lane branch shows **no builder commits** (the "don't commit" rule is verified
 here, not sandbox-enforced — a builder commit fails the lane).
 
-Checks (c)–(e) plus a stray-file scan are mechanized by `postflight-check.sh`
-(next to this file) — `postflight-check.sh <freeze-sha> <worktree> <lane-branch>
+Checks (c)–(e) plus a stray-file scan are mechanized by
+`${CLAUDE_SKILL_DIR}/scripts/postflight-check.sh` — `postflight-check.sh
+<freeze-sha> <worktree> <lane-branch>
 [declared-glob …]` prints PASS/FAIL per check and exits non-zero on any
 violation, so none gets skipped; the prose above is what each check means.
 

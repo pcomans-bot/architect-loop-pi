@@ -101,7 +101,7 @@ git -C <repo-root> worktree add .architect/wt/<slice>-<NN> \
 **`cd <wt> && pi` is not isolation — prefer the confined wrapper for parallel lanes.**
 pi has no sandbox and a builder handed an absolute path can anchor to the canonical
 repo root and write OUTSIDE its worktree, into the main checkout — so two parallel
-lanes corrupt one tree. `confined-pi.sh` (next to this file) bind-mounts the worktree
+lanes corrupt one tree. `${CLAUDE_SKILL_DIR}/scripts/confined-pi.sh` bind-mounts the worktree
 OVER the canonical repo path inside a private user+mount namespace, so even an
 absolute `/path/to/repo/...` write lands in the worktree; it also carries the stall
 watch (below). Recommended for fan-out:
@@ -109,7 +109,7 @@ watch (below). Recommended for fan-out:
 ```bash
 # per lane, off the freeze commit (worktree as above); block lives INSIDE the worktree,
 # log OUTSIDE the repo so it's readable from the main checkout:
-confined-pi.sh \
+${CLAUDE_SKILL_DIR}/scripts/confined-pi.sh \
   <repo-root>/.architect/wt/<slice>-<NN> \
   <repo-root> \
   .architect/block.md \
@@ -191,7 +191,7 @@ the slice.
 
 `--tools read,grep,find,ls` is the only thing that actually enforces read-only —
 without it a "reviewer" still has `write`/`edit`/`bash`. The self-healing wrapper
-honours it too: `TOOLS=read,grep,find,ls dispatch-pi.sh <sid> <block> <out>` passes
+honours it too: `TOOLS=read,grep,find,ls ${CLAUDE_SKILL_DIR}/scripts/dispatch-pi.sh <sid> <block> <out>` passes
 `--tools` through, so a reviewer/researcher routed through the wrapper is sandboxed,
 not merely instructed.
 
@@ -206,7 +206,7 @@ SHIP / DO-NOT-SHIP:
 
 ```bash
 # read-only + bash/tmux for live play; criteria-only block, no architect opinion
-TOOLS=read,grep,find,ls,bash dispatch-pi.sh \
+TOOLS=read,grep,find,ls,bash ${CLAUDE_SKILL_DIR}/scripts/dispatch-pi.sh \
   judge-<slice> .architect/judge-block.md .architect/judge.out
 ```
 
@@ -244,11 +244,11 @@ rather than hand-rolled long-running harnesses, which are the usual stall source
 A distinct stall hits at *launch*: a fresh dispatch intermittently draws a model
 connection that never streams (zero output bytes AND zero CPU) — not an outage, a
 stuck connection that a kill + re-dispatch with a new session id clears in seconds.
-`dispatch-pi.sh` (next to this file) automates that recovery: it watches output bytes
+`${CLAUDE_SKILL_DIR}/scripts/dispatch-pi.sh` automates that recovery: it watches output bytes
 + `/proc` CPU jiffies and auto-kills+relaunches (`<sid>-rN`) if both stay zero past
 ~75s, then waits to completion under an outer timeout. Route single-lane dispatches
-through it so a launch stall self-heals without a supervision cycle; `confined-pi.sh`
-carries the same watch for parallel lanes. The manual child-process triage above
+through it so a launch stall self-heals without a supervision cycle;
+`scripts/confined-pi.sh` carries the same watch for parallel lanes. The manual child-process triage above
 remains the fallback for a *mid-run* stuck command (where the run is otherwise alive).
 
 ## Manual alternative (human-driven)

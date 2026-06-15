@@ -188,15 +188,15 @@ Each design choice is source-backed (full citations in
 | [DESIGN.md](DESIGN.md) | The design document — 12 enforced rules, failure-mode table, cited sources |
 | [skills/architect/SKILL.md](skills/architect/SKILL.md) | The architect role: hard rules + procedure |
 | [skills/architect/dispatch.md](skills/architect/dispatch.md) | `pi` dispatch commands, builder block, worktree fan-out, model switching, stall triage |
-| [skills/architect/dispatch-pi.sh](skills/architect/dispatch-pi.sh) | Self-healing single-lane dispatch wrapper — auto-kills + re-dispatches a stalled launch; `TOOLS=…` enforces a read-only run |
-| [skills/architect/confined-pi.sh](skills/architect/confined-pi.sh) | Confined parallel-lane wrapper — bind-mounts the worktree over the repo path (a lane can't escape into the main checkout); refuses to run without namespaces |
-| [skills/architect/postflight-check.sh](skills/architect/postflight-check.sh) | Mechanical post-flight checks: gates untampered, no builder commits, only declared files touched, no strays |
+| [skills/architect/scripts/dispatch-pi.sh](skills/architect/scripts/dispatch-pi.sh) | Self-healing single-lane dispatch wrapper — auto-kills + re-dispatches a stalled launch; `TOOLS=…` enforces a read-only run |
+| [skills/architect/scripts/confined-pi.sh](skills/architect/scripts/confined-pi.sh) | Confined parallel-lane wrapper — bind-mounts the worktree over the repo path (a lane can't escape into the main checkout); refuses to run without namespaces |
+| [skills/architect/scripts/postflight-check.sh](skills/architect/scripts/postflight-check.sh) | Mechanical post-flight checks: gates untampered, no builder commits, only declared files touched, no strays |
 | [skills/architect/research.md](skills/architect/research.md) | Slice-scale inline fact-check fan-out |
-| [skills/architect/HANDOFF.template.md](skills/architect/HANDOFF.template.md) | The repo-memory file |
+| [skills/architect/templates/HANDOFF.template.md](skills/architect/templates/HANDOFF.template.md) | The repo-memory file |
 | [skills/architect-research/SKILL.md](skills/architect-research/SKILL.md) | Research orchestration: scout → design → fan out → verify → write |
 | [skills/architect-research/lanes.md](skills/architect-research/lanes.md) | Scout block + source-class tactics library with verified endpoints |
 | [tests/validate_skills.py](tests/validate_skills.py) | Repo sanity checks (frontmatter limits, links, fences) |
-| [skills/architect/HARNESS-LEARNINGS.template.md](skills/architect/HARNESS-LEARNINGS.template.md) | Template for capturing harness-level lessons during a run; contribute completed logs back as a PR |
+| [skills/architect/templates/HARNESS-LEARNINGS.template.md](skills/architect/templates/HARNESS-LEARNINGS.template.md) | Template for capturing harness-level lessons during a run; contribute completed logs back as a PR |
 | [AGENTS.md](AGENTS.md) | Instructions for agents/contributors working on this repo; lists known harness lessons |
 
 ## FAQ
@@ -256,7 +256,7 @@ in `dispatch.md`.
 Running the loop surfaces harness-level lessons (dispatch patterns, stall
 behaviour, isolation edge cases) that are not project-specific. Capture them
 as you go using the template in
-[skills/architect/HARNESS-LEARNINGS.template.md](skills/architect/HARNESS-LEARNINGS.template.md) and
+[skills/architect/templates/HARNESS-LEARNINGS.template.md](skills/architect/templates/HARNESS-LEARNINGS.template.md) and
 contribute your completed log back as a PR — surviving entries are distilled
 into the skills so every future run benefits.
 
@@ -279,7 +279,7 @@ The loop shape and discipline are unchanged. What differs:
 | **Stall recovery** | Manual triage | `dispatch-pi.sh` auto-detects 0-byte/0-CPU stalls and re-dispatches |
 | **Parallel isolation** | Worktree + Codex sandbox | `confined-pi.sh` namespace bind-mount (cd+worktree alone is not sufficient) |
 | **Post-flight** | Manual checks | `postflight-check.sh` mechanises gate tamper / boundary / no-commit checks |
-| **Learnings** | — | `skills/architect/HARNESS-LEARNINGS.template.md` + contribution path |
+| **Learnings** | — | `skills/architect/templates/HARNESS-LEARNINGS.template.md` + contribution path |
 
 The `dispatch-pi.sh`, `confined-pi.sh`, and `postflight-check.sh` scripts,
 and the lessons folded into SKILL.md and dispatch.md, all came from the first

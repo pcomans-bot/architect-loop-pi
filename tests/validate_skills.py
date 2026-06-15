@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parent.parent
 SKILLS = ROOT / "skills"
 MAX_DESC = 1024
 REQUIRED_SIBLINGS = {
-    "architect": ["dispatch.md", "research.md", "HANDOFF.template.md"],
+    "architect": ["dispatch.md", "research.md", "templates/HANDOFF.template.md"],
     "architect-research": ["lanes.md"],
 }
 errors: list[str] = []
@@ -59,7 +59,7 @@ def check_siblings(skill_dir: Path) -> None:
         if not (skill_dir / sibling).exists():
             errors.append(f"{skill_dir.name}: required file {sibling} missing")
     skill_md = (skill_dir / "SKILL.md").read_text(encoding="utf-8")
-    for ref in re.findall(r"`([\w][\w.-]*\.md)`", skill_md):
+    for ref in re.findall(r"`([\w][\w./-]*\.md)`", skill_md):
         if ref in ("SKILL.md", "AGENTS.md", "CLAUDE.md", "HANDOFF.md", "CONVENTIONS.md",
                    "PLAN.md", "MEMORY.md", "README.md", "GEMINI.md"):
             continue  # repo-of-use files, not siblings of the skill
@@ -72,7 +72,7 @@ def check_siblings(skill_dir: Path) -> None:
 
 
 def check_scripts() -> None:
-    """Any `*.sh` the architect docs reference must ship next to them and be
+    """Any `*.sh` the architect docs reference must ship in scripts/ and be
     executable (install.sh copies skills/*/ recursively, preserving the +x bit)."""
     arch = SKILLS / "architect"
     if not arch.is_dir():
@@ -81,11 +81,13 @@ def check_scripts() -> None:
     for doc in ("dispatch.md", "SKILL.md"):
         p = arch / doc
         if p.exists():
-            referenced |= set(re.findall(r"`([\w./-]+\.sh)`", p.read_text(encoding="utf-8")))
-    for ref in sorted(referenced):
-        target = arch / Path(ref).name
+            referenced |= set(re.findall(r"`[\w${}/.-]*?([\w-]+\.sh)`", p.read_text(encoding="utf-8")))
+    for name in sorted(referenced):
+        # scripts live in scripts/; tolerate a flat fallback for older refs
+        target = next((c for c in (arch / "scripts" / name, arch / name) if c.exists()),
+                      arch / "scripts" / name)
         if not target.exists():
-            errors.append(f"architect: script `{ref}` referenced but {target.name} is missing")
+            errors.append(f"architect: script `{name}` referenced but scripts/{name} is missing")
         elif not os.access(target, os.X_OK):
             errors.append(f"architect: script {target.name} is not executable (chmod +x)")
 
