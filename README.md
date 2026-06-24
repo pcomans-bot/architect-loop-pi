@@ -78,6 +78,69 @@ below. The devcontainer allows it; some Docker setups need
 dispatch builders. `/architect-research` is for when you're still deciding
 *what* to build — its cited report feeds the build loop's PRD.
 
+## How the loop works
+
+The whole system is one split: **Claude (Fable) is the architect** — it
+plans, judges, and integrates, but never writes implementation code — and
+**`pi` builders (DeepSeek by default) write the code**, each in an isolated git
+worktree. There is no shared in-memory state between them: **the repo is the
+only memory**, so every fact that survives a session has to be written to a
+file under `docs/`. "Not in the repo = didn't happen."
+
+A single `/architect` work block runs as a short Fable session that moves a
+one-PR slice through six stages:
+
+1. **Ground.** Read the project's operating docs (`CLAUDE.md` → `README.md` →
+   architecture), learn the exact verification commands, read `docs/HANDOFF.md`
+   and every gate file it points to. The handoff is the entry point — a short
+   (~150-line) table of contents, not a log.
+2. **Arbitrate & judge the *previous* run.** Rule on every open disagreement
+   (ACCEPT/REJECT/MODIFY), then run each frozen gate command yourself and
+   compare the output to the verbatim gate text → PASS/FAIL/INVALID. Builder
+   claims are hearsay; gate-pass is necessary but not sufficient, so the diff is
+   also read against the spec's intent. **Crucially, a run is never judged in
+   the session that dispatched it** — judgment always happens with fresh context.
+3. **Spec the next slice.** Write the full delegation contract: objective,
+   output format, verification commands, boundaries (files it may/may not
+   touch), and a lane plan splitting the slice into 1–4 parallel lanes whose
+   file-touch sets are checked for overlap (overlap → run as one lane).
+4. **Freeze the gates.** Acceptance commands + thresholds are written to
+   `docs/gates/<slice>.md` and committed *before* any builder starts. This
+   freeze commit is the last thing before dispatch; gate files are read-only,
+   and a builder edit to one (caught by `git diff`) auto-fails the slice.
+5. **Dispatch builders.** One fresh `pi` run per lane, off the freeze commit:
+   one lane runs in the main checkout, 2–4 lanes each get their own
+   `git worktree` + branch, all launched in the background. Each builder argues
+   with the spec first (PHASE 0 — silent compliance is a defect), builds only
+   its declared files, runs the gates, and writes raw results to
+   `docs/lanes/<slice>-<lane>.md`. **Builders never commit.** The session ends
+   here — multi-hour runs are normal; liveness/stall checks happen on return.
+6. **Post-flight & integrate.** When runs finish, verify per lane: results are
+   in the lane report, PHASE 0 disagreements were raised, `docs/gates/` is
+   clean, only in-bounds files changed, and no builder commits exist. Then the
+   architect (not the builder) commits each passing lane, merges them
+   sequentially into `slice/<name>` running gates after each merge, and
+   consolidates the lane reports into `docs/HANDOFF.md`. The verdict on the
+   integration branch belongs to the *next* session (stage 2) — so the loop
+   closes by handing back to itself.
+
+Research is a separate, deliberately heavier loop (`/architect-research`) that
+feeds stage 3: a scout maps the topic, Fable designs parallel researcher lanes,
+claims are verified against sources, and the cited report distills into
+`docs/prd/<slice>.md`, which the slice spec then cites.
+
+**State lives entirely in the repo.** The artifacts that carry it:
+
+| Artifact | Written by | Role |
+|---|---|---|
+| `docs/HANDOFF.md` | architect | Short table of contents + current state; the entry point each session, pruned every block |
+| `docs/gates/<slice>.md` | architect | Frozen acceptance commands/thresholds; committed before dispatch, read-only thereafter |
+| `docs/lanes/<slice>-<lane>.md` | builder | Raw per-lane results (tables, numbers, command output) — no interpretation |
+| `docs/prd/<slice>.md` | architect | Cited problem/decision brief distilled from research; the spec references it |
+| `docs/research/<topic>.md` | architect | Decision-oriented research report from `/architect-research` |
+| git worktrees + `lane/*`, `slice/*` branches | — | Isolation between parallel builders; the architect owns every merge |
+| `.architect/` (gitignored) | tooling | Dispatch blocks, `--mode json` run logs, raw research findings |
+
 ## /architect
 
 ```mermaid
